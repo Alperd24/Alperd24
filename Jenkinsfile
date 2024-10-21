@@ -26,9 +26,10 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'echo Running tests...'
-
-                sh 'mvn test'
+                script {
+                    sh 'echo Running tests...'
+                    sh 'mvn test'
+                }
             }
         }
         stage('Security Check with gitleaks') {
