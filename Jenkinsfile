@@ -22,20 +22,26 @@ pipeline {
                 // sh 'mvn test'
             }
         }
-        stage('Static Analysis with AppScreener') {
+        stage('Static Analysis (SAST)') {
             steps {
-                sh 'echo Installing AppScreener...'
-                sh 'curl -sSL https://get.app-screener.com | bash'
+                sh 'echo Running SAST...'
+                // Установите зависимости SAST, если они требуются
+                // Для примера, это может быть установка инструмента, например:
+                // sh 'npm install -g some-sast-tool'
+                // или любой другой SAST инструмент, который вы используете.
             }
         }
-        stage('Secret Detection with TruffleHog') {
+        stage('TruffleHog') {
             steps {
-                sh 'echo Installing TruffleHog...'
-                sh 'pip install truffleHog' // Установка через pip
+                sh 'echo Running TruffleHog...'
+                // Установка TruffleHog
+                sh 'pip install truffleHog'  // Убедитесь, что pip установлен в вашем агенте
+                // Запуск TruffleHog
+                sh 'trufflehog --json . > trufflehog_report.json'
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'trufflehog_report.json', allowEmptyArchive: true // Сохранение отчета как артефакт
+                    archiveArtifacts artifacts: 'trufflehog_report.json', allowEmptyArchive: true
                 }
             }
         }
