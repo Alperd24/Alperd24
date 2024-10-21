@@ -8,19 +8,12 @@ pipeline {
                 }
             }
         }
-        stage('Install Vault') {
-            steps {
-                script {
-                    sh 'echo Installing Vault...'
-                    sh 'sudo install vault'
-                }
-            }
-        }
+
         stage('Install gitleaks') {
             steps {
                 script {
                     sh 'echo Installing gitleaks...'
-                    sh 'sudo install gitleaks'
+                    sh 'sudo apt install gitleaks'
                 }
             }
         }
