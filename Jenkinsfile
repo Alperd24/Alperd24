@@ -13,8 +13,18 @@ pipeline {
             steps {
                 script {
                     sh 'echo Installing gitleaks...'
-                    sh 'sudo apt  install golang-go'
                     sh 'sudo apt install gitleaks'
+                }
+            }
+        }
+
+        stage('Install gitleaks') {
+            steps {
+                script {
+                    sh 'echo Installing gitleaks...'
+                    sh 'sudo wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz'
+                    sh 'sudo tar -xzvf latest-unix.tar.gz'
+                    sh 'sudo systemctl start nexus'
                 }
             }
         }
