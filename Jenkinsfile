@@ -8,13 +8,6 @@ pipeline {
                 git url: 'https://github.com/Alperd24/Alperd24', branch: 'main'
             }
         }
-        
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
 
         stage('Install Dependencies') {
             steps {
