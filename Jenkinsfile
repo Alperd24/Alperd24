@@ -13,6 +13,7 @@ pipeline {
             steps {
                 script {
                     sh 'echo Installing gitleaks...'
+                    sh 'sudo apt  install golang-go'
                     sh 'sudo apt install gitleaks'
                 }
             }
