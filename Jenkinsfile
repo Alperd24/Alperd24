@@ -9,13 +9,24 @@ pipeline {
             }
         }
         
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Установите pip и TruffleHog
+                    // Обновление пакетов и установка python3-venv
                     sh 'sudo apt-get update'
-                    sh 'sudo apt-get install -y python3-pip'
-                    sh 'pip3 install truffleHog'
+                    sh 'sudo apt-get install -y python3-pip python3-venv'
+
+                    // Создание виртуального окружения
+                    sh 'python3 -m venv venv'
+                    // Активация виртуального окружения и установка зависимостей
+                    sh 'source venv/bin/activate && pip install --upgrade pip'
                 }
             }
         }
@@ -23,7 +34,10 @@ pipeline {
         stage('Run TruffleHog') {
             steps {
                 script {
-                    sh 'trufflehog --json . > trufflehog_report.json'
+                    // Активация виртуального окружения и установка TruffleHog
+                    sh 'source venv/bin/activate && pip install truffleHog'
+                    // Запуск TruffleHog
+                    sh 'source venv/bin/activate && trufflehog --json . > trufflehog_report.json'
                 }
             }
         }
@@ -31,7 +45,7 @@ pipeline {
         stage('Install AppScreener') {
             steps {
                 script {
-                    // Установите AppScreener (для этого используется curl)
+                    // Установка и запуск AppScreener
                     sh 'curl -sSL https://get.app-screener.com | bash'
                 }
             }
@@ -40,6 +54,7 @@ pipeline {
         stage('Run AppScreener') {
             steps {
                 script {
+                    // Запуск AppScreener
                     sh 'appscreener check .'
                 }
             }
