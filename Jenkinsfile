@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Alperd24/Alperd24'
+                git 'https://github.com/Alperd24/Alperd24', branch: 'main'
             }
         }
         
