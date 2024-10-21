@@ -1,55 +1,41 @@
 pipeline {
-    agent any
-
+    agent any 
     stages {
-        stage('Checkout') {
+        stage('Clone') {
             steps {
-                git 'https://github.com/Alperd24/Alperd24', branch: 'main'
+                script {
+                    git url: 'https://github.com/Alperd24/Alperd24', branch: 'main'
+                }
             }
         }
-        
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
-                sh 'sudo apt-get update'
-                sh 'sudo apt-get install -y python3-full python3-venv'
-                sh 'python3 -m venv venv'
-                sh '''
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                '''
+                sh 'echo Building the application...'
+                // ваши команды сборки, например:
+                // sh 'mvn clean install'
             }
         }
-        
-        stage('Run TruffleHog') {
+        stage('Test') {
             steps {
-                sh '''
-                . venv/bin/activate
-                trufflehog --json . > trufflehog_report.json || echo "TruffleHog run failed"
-                '''
+                sh 'echo Running tests...'
+                // ваши команды тестирования, например:
+                // sh 'mvn test'
             }
         }
-        
-        stage('Install AppScreener') {
+        stage('Deploy') {
             steps {
-                sh '''
-                curl -sSL https://get.app-screener.com | bash
-                '''
-            }
-        }
-
-        stage('Run AppScreener') {
-            steps {
-                sh '''
-                appscreener check . || echo "AppScreener run failed"
-                '''
+                sh 'echo Deploying application...'
+                // ваши команды развертывания, например:
+                // sh 'scp target/*.war user@server:/path/to/deploy'
             }
         }
     }
-
     post {
-        always {
-            archiveArtifacts artifacts: 'trufflehog_report.json', allowEmptyArchive: true
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
