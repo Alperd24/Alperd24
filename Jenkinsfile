@@ -1,31 +1,36 @@
 pipeline {
     agent any 
-    stages {
-        stage('Install DefectDojo') {
+        stages {
+        stage('Cleanup') {
+            steps {
+                cleanWs() // Очистка рабочего пространства
+            }
+        }
+
+        stage('Install Docker') {
             steps {
                 script {
-                    sh '''
-                        echo "Installing DefectDojo..."
-                        # Установка Docker, если он не установлен
-                        # Убедитесь, что ваше окружение поддерживает Docker
-                        if ! command -v docker &> /dev/null
-                        then
-                            echo "Docker could not be found. Installing..."
-                            # Например, команды для установки Docker
-                            # sudo apt-get update
-                            # sudo apt-get install -y docker.io
-                        fi
-
-                        # Клонирование DefectDojo
-                        git clone https://github.com/DefectDojo/django-DefectDojo.git
-                        cd django-DefectDojo
-                        # Запуск DefectDojo
-                        docker-compose up -d
-                    '''
+                    if (!sh(script: 'command -v docker', returnStatus: true)) {
+                        error('Docker is not installed. Please install it first.')
+                    } else {
+                        echo 'Docker is installed.'
+                    }
                 }
             }
         }
 
+        stage('Install DefectDojo') {
+            steps {
+                script {
+                    if (!fileExists('django-DefectDojo')) {
+                        echo 'Installing DefectDojo...'
+                        sh 'git clone https://github.com/DefectDojo/django-DefectDojo.git'
+                    } else {
+                        echo 'DefectDojo already exists, skipping clone.'
+                    }
+                }
+            }
+        }
         stage('Install Vault') {
             steps {
                 script {
