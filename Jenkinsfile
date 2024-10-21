@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any 
 
     stages {
         stage('Checkout') {
@@ -9,52 +9,45 @@ pipeline {
             }
         }
         
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                // Сборка проекта (пример для Node.js)
-                echo 'Building the application...'
-                sh 'npm install' // или другие команды для вашей сборки
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                sh 'npm test'
-            }
-        }
-        
-        stage('Static Analysis with AppScreener') {
-            steps {
-                echo 'Running AppScreener...'
-                // Установка и запуск AppScreener
-                sh 'curl -sSL https://get.app-screener.com | bash'
-                sh 'appscreener check .'
-            }
-        }
-
-        stage('Secret Detection with TruffleHog') {
-            steps {
-                echo 'Running TruffleHog...'
-                // Установка TruffleHog
-                sh 'pip install truffleHog'
-                // Запуск TruffleHog
-                sh 'trufflehog --json . > trufflehog_report.json'
-            }
-
-            post {
-                always {
-                    // Сохранение отчета как артефакта
-                    archiveArtifacts artifacts: 'trufflehog_report.json', fingerprint: true
+                script {
+                    // Установите pip и TruffleHog
+                    sh 'sudo apt-get update'
+                    sh 'sudo apt-get install -y python3-pip'
+                    sh 'pip3 install truffleHog'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Run TruffleHog') {
             steps {
-                echo 'Deploying application...'
-                // Команды для развертывания вашего приложения
-                // Например, scp или запуск Docker-контейнера
+                script {
+                    sh 'trufflehog --json . > trufflehog_report.json'
+                }
+            }
+        }
+
+        stage('Install AppScreener') {
+            steps {
+                script {
+                    // Установите AppScreener (для этого используется curl)
+                    sh 'curl -sSL https://get.app-screener.com | bash'
+                }
+            }
+        }
+
+        stage('Run AppScreener') {
+            steps {
+                script {
+                    sh 'appscreener check .'
+                }
+            }
+        }
+        
+        stage('Cleanup') {
+            steps {
+                sh 'rm trufflehog_report.json' // Удаление отчета (по желанию)
             }
         }
     }
