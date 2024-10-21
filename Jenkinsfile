@@ -1,64 +1,26 @@
 pipeline {
     agent any 
-        stages {
-        stage('Cleanup') {
-            steps {
-                cleanWs() // Очистка рабочего пространства
-            }
-        }
-
-        stage('Install Docker') {
+    stages {
+        stage('Clone') {
             steps {
                 script {
-                    if (!sh(script: 'command -v docker', returnStatus: true)) {
-                        error('Docker is not installed. Please install it first.')
-                    } else {
-                        echo 'Docker is installed.'
-                    }
-                }
-            }
-        }
-
-        stage('Install DefectDojo') {
-            steps {
-                script {
-                    if (!fileExists('django-DefectDojo')) {
-                        echo 'Installing DefectDojo...'
-                        sh 'git clone https://github.com/DefectDojo/django-DefectDojo.git'
-                    } else {
-                        echo 'DefectDojo already exists, skipping clone.'
-                    }
+                    git url: 'https://github.com/Alperd24/Alperd24', branch: 'main'
                 }
             }
         }
         stage('Install Vault') {
             steps {
                 script {
-                    sh '''
-                        echo "Installing Vault..."
-                        # Установка Vault
-                        # Убедитесь, что ваше окружение поддерживает пакеты
-                        if ! command -v vault &> /dev/null
-                        then
-                            echo "Vault could not be found. Installing..."
-                            # команды для установки Vault
-                            # Например для Ubuntu:
-                            wget https://releases.hashicorp.com/vault/1.9.1/vault_1.9.1_linux_amd64.zip
-                            unzip vault_1.9.1_linux_amd64.zip
-                            sudo mv vault /usr/local/bin/
-                        fi
-
-                        # Запуск Vault
-                        vault server -config=/path/to/config.hcl
-                    '''
+                    sh 'echo Installing Vault...'
+                    sh 'sudo install vault'
                 }
             }
         }
-
-        stage('Clone') {
+        stage('Install gitleaks') {
             steps {
                 script {
-                    git url: 'https://github.com/Alperd24/Alperd24', branch: 'main'
+                    sh 'echo Installing gitleaks...'
+                    sh 'sudo install gitleaks'
                 }
             }
         }
@@ -74,6 +36,14 @@ pipeline {
                 sh 'echo Running tests...'
                 // ваши команды тестирования, например:
                 // sh 'mvn test'
+            }
+        }
+        stage('Security Check with gitleaks') {
+            steps {
+                script {
+                    sh 'echo Running gitleaks...'
+                    sh 'gitleaks detect --source=./'  // Выполните проверку на наличие утечек
+                }
             }
         }
         stage('Deploy') {
