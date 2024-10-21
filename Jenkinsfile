@@ -18,16 +18,6 @@ pipeline {
             }
         }
 
-        stage('Install nexus') {
-            steps {
-                script {
-                    sh 'echo Installing nexus...'
-                    sh 'sudo wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz'
-                    sh 'sudo tar -xzvf latest-unix.tar.gz'
-                    sh 'sudo systemctl start nexus'
-                }
-            }
-        }
         stage('Build') {
             steps {
                 sh 'echo Building the application...'
