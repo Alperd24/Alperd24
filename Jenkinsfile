@@ -21,29 +21,27 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'echo Building the application...'
-                // ваши команды сборки, например:
-                // sh 'mvn clean install'
+                sh 'mvn clean install'
             }
         }
         stage('Test') {
             steps {
                 sh 'echo Running tests...'
-                // ваши команды тестирования, например:
-                // sh 'mvn test'
+
+                 sh 'mvn test'
             }
         }
         stage('Security Check with gitleaks') {
             steps {
                 script {
                     sh 'echo Running gitleaks...'
-                    sh 'gitleaks detect --source=./'  // Выполните проверку на наличие утечек
+                    sh 'gitleaks detect --source=./' 
                 }
             }
         }
         stage('Deploy') {
             steps {
                 sh 'echo Deploying application...'
-                // ваши команды развертывания, например:
                 // sh 'scp target/*.war user@server:/path/to/deploy'
             }
         }
