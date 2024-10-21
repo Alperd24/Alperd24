@@ -21,14 +21,14 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'echo Building the application...'
-                sh 'mvn clean install'
+                // sh 'mvn clean install'
             }
         }
         stage('Test') {
             steps {
                 sh 'echo Running tests...'
 
-                 sh 'mvn test'
+                sh 'mvn test'
             }
         }
         stage('Security Check with gitleaks') {
