@@ -38,9 +38,9 @@ pipeline {
                             echo "Vault could not be found. Installing..."
                             # команды для установки Vault
                             # Например для Ubuntu:
-                            # wget https://releases.hashicorp.com/vault/1.9.1/vault_1.9.1_linux_amd64.zip
-                            # unzip vault_1.9.1_linux_amd64.zip
-                            # sudo mv vault /usr/local/bin/
+                            wget https://releases.hashicorp.com/vault/1.9.1/vault_1.9.1_linux_amd64.zip
+                            unzip vault_1.9.1_linux_amd64.zip
+                            sudo mv vault /usr/local/bin/
                         fi
 
                         # Запуск Vault
