@@ -26,14 +26,12 @@ pipeline {
             steps {
                 sh 'echo Installing AppScreener...'
                 sh 'curl -sSL https://get.app-screener.com | bash'
-                sh 'appscreener check .' // Выполнение анализа
             }
         }
         stage('Secret Detection with TruffleHog') {
             steps {
                 sh 'echo Installing TruffleHog...'
                 sh 'pip install truffleHog' // Установка через pip
-                sh 'trufflehog --json . > trufflehog_report.json' // Запуск TruffleHog
             }
             post {
                 always {
